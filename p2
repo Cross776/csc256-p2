@@ -1,0 +1,60 @@
+.data
+prompt: .asciiz "Enter a number which is less than or equal to 100 to convert to binary:"
+out1: .asciiz "Try again:\n"
+out2: .asciiz "Converting...\n"
+out3: .asciiz " in binary is:"
+.text   #Initializations
+   li $s1,8
+   li $t2,2
+   
+   #shows prompt
+read:   la $a0,prompt
+   li $v0,4
+   syscall
+   
+   #read user input
+   li $v0,5
+   syscall
+   move $s0,$v0   #save
+   
+   #if less than 100 try
+   bgt $s0,100,try
+   
+   #shows message
+   la $a0,out2
+   li $v0,4
+   syscall
+   
+   #shows user input
+   move $a0,$s0
+   li $v0,1
+   syscall
+   
+   #shows in binary
+   la $a0,out3
+   li $v0,4
+   syscall
+repeat:   #processing
+   beq $s1,0,done    #if 0, its done
+   addi $s1,$s1,-1   #else decrement
+   srlv $t0,$s0,$s1  #shift to right -1 times
+   rem $t1,$t0,$t2   #calculate remainder
+   
+   #reveal remainder
+   move $a0,$t1
+   li $v0,1
+   syscall
+   
+   #repeat jump
+   j repeat
+try:   #if 100+, print try again
+   la $a0,out1
+   li $v0,4
+   syscall
+   
+   #jump to label to read user input again
+   j read  
+done:  #done
+   li $v0,10
+   syscall
+
